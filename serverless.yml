@@ -1,0 +1,31 @@
+service: eve-api
+app: eve-api
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime:  python3.8
+  environment:
+    MONGO_HOST: "mongodb+srv://testuser:abcd1234@testcluster.0q2dk.mongodb.net/hello?replicaSet=atlas-i3rbuy-shard-0&readPreference=primary&ssl=true"
+    MONGO_PORT: 27017
+    MONGO_USERNAME : "testuser"
+    MONGO_PASSWORD : "abcd1234"
+    MONGO_DBNAME: "hello"
+  iamRoleStatements:
+    -  Effect: "Allow"
+       Action:
+         - "lambda:InvokeFunction"
+       Resource: "*"
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY {proxy+}
+
+custom:
+  wsgi:
+    app: run.app
